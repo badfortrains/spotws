@@ -1,0 +1,35 @@
+<html>
+	<script>
+		class Client {
+			constructor(token) {
+				this.socket = new WebSocket('ws://localhost:8081/conn',[token]);
+				this.token = token;
+				this.id = 0;
+
+				this.socket.addEventListener('message', function (event) {
+					const data = JSON.parse(event.data);
+					if (data.Method && data.Method == 'notify') {
+    					console.log(JSON.parse(data.Params[0]));
+					}
+				});
+			}
+			send(method, args = {}) {
+				args.token = this.token;
+				args.ident = '4fb6c1a5b0604d43a4dee062852a7f2c6626dbae';
+				const call = {
+					jsonrpc: "2.0",
+					method,
+					params: [args],
+					id: this.id++,
+				};
+				this.socket.send(JSON.stringify(call));
+			}
+		}
+
+		const token = /token=(.+)/.exec(document.cookie)[1];
+		window.client = new Client(token);
+	</script>
+	<body>
+		<a href="{{.LinkAdr}}">Login to Spotify</a>
+	</body>
+</html>
