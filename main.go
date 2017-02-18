@@ -133,8 +133,8 @@ func main() {
 	}
 	rpc.Register(client)
 	r := mux.NewRouter()
-	s := http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))
-	r.PathPrefix("/static/").Handler(s)
+	s := http.StripPrefix("/public/", http.FileServer(http.Dir("./public/")))
+	r.PathPrefix("/public/").Handler(s)
 	r.HandleFunc("/callback", callbackHandler)
 	r.HandleFunc("/control", appHandler)
 	r.HandleFunc("/", rootHandler)

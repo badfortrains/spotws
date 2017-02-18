@@ -1,4 +1,6 @@
 <html>
+	<script src="public/zepto.js"></script>
+	<script src="public/simple.js"></script>
 	<script>
 		class Client {
 			constructor(token) {
@@ -6,13 +8,14 @@
 				this.token = token;
 				this.id = 0;
 
-				this.socket.addEventListener('message', function (event) {
+				this.socket.addEventListener('message', (event) => {
 					const data = JSON.parse(event.data);
-					if (data.Method && data.Method == 'notify') {
-    					console.log(JSON.parse(data.Params[0]));
+					if (data.Method == 'notify' && this.handleCb) {
+						this.handleCb(data.Params[0]);
 					}
 				});
 			}
+
 			send(method, args = {}) {
 				args.token = this.token;
 				args.ident = '4fb6c1a5b0604d43a4dee062852a7f2c6626dbae';
@@ -24,12 +27,32 @@
 				};
 				this.socket.send(JSON.stringify(call));
 			}
+
+			HandleUpdatesCb(handler) {
+				this.handleCb = handler;
+			}
+
+			SendPlay(ident) {
+				this.send('Client.SendPlay', {ident});
+			}
+
+			SendPause(ident) {
+				this.send('Client.SendPause', {ident});
+			}
+
+			SendVolume(ident, volume) {
+				this.send('Client.SendVolume', {ident, volume});
+			}
 		}
 
 		const token = /token=(.+)/.exec(document.cookie)[1];
 		window.client = new Client(token);
 	</script>
-	<body>
-		<a href="{{.LinkAdr}}">Login to Spotify</a>
-	</body>
+  <body>
+    <h2>Spotcontrol</h2>
+    <div id="loginComponent"></div>
+    <div id="selectComponent"></div>
+    <div id="stateComponent"></div>
+    <div id="commandsComponent"></div>
+  </body>
 </html>
