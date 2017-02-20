@@ -1,6 +1,6 @@
 <html>
+	<script src="public/convert.js"></script>
 	<script src="public/zepto.js"></script>
-	<script src="public/simple.js"></script>
 	<script>
 		class Client {
 			constructor(token) {
@@ -18,7 +18,6 @@
 
 			send(method, args = {}) {
 				args.token = this.token;
-				args.ident = '4fb6c1a5b0604d43a4dee062852a7f2c6626dbae';
 				const call = {
 					jsonrpc: "2.0",
 					method,
@@ -40,14 +39,24 @@
 				this.send('Client.SendPause', {ident});
 			}
 
-			SendVolume(ident, volume) {
+			SendVolume(ident, volumeString) {
+				const volume = parseInt(volumeString, 10);
 				this.send('Client.SendVolume', {ident, volume});
+			}
+
+			SendHello() {
+				this.send('Client.SendHello');
+			}
+
+			SendNotify(ident) {
+				this.send('Client.SendNotify', {ident})
 			}
 		}
 
 		const token = /token=(.+)/.exec(document.cookie)[1];
 		window.client = new Client(token);
 	</script>
+	<script src="public/simple.js"></script>
   <body>
     <h2>Spotcontrol</h2>
     <div id="loginComponent"></div>

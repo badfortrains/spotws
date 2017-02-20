@@ -154,7 +154,7 @@ function renderComponent(section, content){
 }
 
 function updateTrack(trackId, ident) {
-	const id = spotcontrol.convert62(trackId)
+	const id = window.converter.base64ToBase62(trackId);
 	let device = getDevice(ident)
 	if (device.currentTrack && device.currentTrack.id == id){
 		return;
@@ -196,6 +196,7 @@ function handleUpdates(update){
 			}
 			device = deviceUpdate
 			appState.devices.push(deviceUpdate);
+			controller.SendNotify(deviceUpdate.ident)
 			renderComponent('select', selectComponent())
 		}
 
@@ -208,10 +209,13 @@ function handleUpdates(update){
 }
 
 $(document).ready(function(){
-	appState.loggedIn = true;
-	renderAll();
-	window.controller = window.client
-	controller.HandleUpdatesCb(handleUpdates)
-	listenCommands();
+	window.client.socket.addEventListener('open', () => {
+		appState.loggedIn = true;
+		renderAll();
+		window.controller = window.client
+		controller.HandleUpdatesCb(handleUpdates)
+		listenCommands();
+		controller.SendHello()
+	});
 })
 
